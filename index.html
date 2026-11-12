@@ -2,10 +2,16 @@
 <html lang="fr" data-theme="dark">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Habit Tracker — Monthly</title>
 <meta name="theme-color" content="#0b0b0c">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Habits">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -27,12 +33,12 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);transition:background .35s,color .35s}
-body{min-height:100vh;-webkit-font-smoothing:antialiased}
+body{min-height:100vh;-webkit-font-smoothing:antialiased;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 button{font-family:inherit;color:inherit;cursor:pointer}
 
 /* ---------- theme toggle ---------- */
 .theme-btn{
-  position:fixed;top:18px;right:18px;z-index:40;width:48px;height:48px;border-radius:50%;
+  position:fixed;top:calc(18px + env(safe-area-inset-top));right:18px;z-index:40;width:48px;height:48px;border-radius:50%;
   border:2.5px solid var(--fg);background:var(--bg);font-size:22px;line-height:1;
   display:grid;place-items:center;transition:transform .25s;
 }
@@ -87,11 +93,16 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .todo.g .tname,.todo.o .tname{text-decoration:line-through;text-decoration-thickness:2px;color:var(--muted)}
 .half{flex:none;border:2px solid var(--o);color:var(--o);background:transparent;font-weight:900;height:28px;padding:0 9px;font-size:12px;letter-spacing:.5px}
 .half.on,.half:hover{background:var(--o);color:#0b0b0c}
-.subs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.sub{border:1.6px solid var(--thin);background:transparent;font-size:12px;font-weight:700;padding:5px 9px;transition:all .2s}
-.sub::before{content:"○ "}
-.sub.on{border-color:var(--g);color:var(--g)}
-.sub.on::before{content:"● "}
+.more{flex:none;border:2px solid var(--thin);background:transparent;font-weight:800;height:28px;padding:0 9px;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.more:hover,.more.on{border-color:var(--fg);color:var(--fg)}
+.subs-wrap{margin-top:8px;padding:10px;background:var(--soft);animation:drop .25s ease both}
+@keyframes drop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.subs-hint{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.3px;margin-bottom:8px}
+.subs{display:flex;flex-wrap:wrap;gap:6px}
+.sub{border:1.6px solid var(--g);color:var(--g);background:transparent;font-size:12px;font-weight:700;padding:5px 9px;transition:all .2s}
+.sub::before{content:"✓ "}
+.sub.miss{border-color:var(--r);color:var(--r);text-decoration:line-through}
+.sub.miss::before{content:"✕ "}
 .td-note{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.3px;margin-top:10px;line-height:1.5}
 
 /* stats */
@@ -112,6 +123,30 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .notes{width:100%;min-height:180px;resize:vertical;border:0;outline:0;background:
   repeating-linear-gradient(to bottom,transparent 0 35px,var(--thin) 35px 36.6px);
   color:var(--fg);font:600 15px/36px var(--font);padding:0 14px;display:block}
+.tabs{display:grid;grid-template-columns:1fr 1fr;border-bottom:3px solid var(--fg)}
+.tabs button{height:40px;border:0;background:transparent;font-size:12px;font-weight:800;letter-spacing:1.5px;color:var(--muted)}
+.tabs button+button{border-left:3px solid var(--fg)}
+.tabs button.on{color:var(--fg);box-shadow:inset 0 -5px 0 var(--fg)}
+.obs-nav{display:flex;align-items:center;justify-content:space-between;height:44px;border-bottom:1.6px solid var(--thin)}
+.obs-nav button{width:44px;height:100%;border:0;background:transparent;font-size:22px;font-weight:800}
+.obs-nav button:hover:not(:disabled){background:var(--fg);color:var(--bg)}
+.obs-nav button:disabled{opacity:.25;cursor:default}
+.obs-nav span{font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+#obsAllPane{max-height:460px;overflow:auto;padding:4px 16px 12px}
+.obs-month{font-size:12px;font-weight:900;letter-spacing:2px;color:var(--muted);margin:14px 0 4px}
+.obs-item{display:block;width:100%;text-align:left;border:0;border-bottom:1.6px solid var(--thin);background:transparent;padding:10px 0}
+.obs-item:hover{background:var(--soft)}
+.obs-item .oi-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:5px}
+.obs-item .oi-d{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.obs-item .oi-dots{display:flex;gap:2px}
+.obs-item .oi-dots i{width:8px;height:8px;border:1px solid var(--thin)}
+.obs-item .oi-dots i.g{background:var(--g);border-color:var(--g)}
+.obs-item .oi-dots i.o{background:var(--o);border-color:var(--o)}
+.obs-item .oi-dots i.r{background:var(--r);border-color:var(--r)}
+.obs-item .oi-t{font-size:14px;font-weight:600;line-height:1.5;white-space:pre-wrap}
+.obs-empty{font-size:13px;font-weight:600;color:var(--muted);padding:18px 0;text-align:center}
+.dlabel{cursor:pointer}
+.dlabel:hover text{text-decoration:underline}
 .tools{display:flex;gap:10px}
 .tools button{flex:1;height:40px;border:2px solid var(--fg);background:transparent;font-size:12px;font-weight:800;letter-spacing:1px}
 .tools button:hover{background:var(--fg);color:var(--bg)}
@@ -134,7 +169,7 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .tip.on{opacity:1;transform:none}
 
 /* ---------- entry modal (to-do) ---------- */
-.overlay{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:20px;
+.overlay{position:fixed;inset:0;z-index:45;display:grid;place-items:center;padding:20px;
   background:rgba(0,0,0,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   opacity:0;pointer-events:none;transition:opacity .3s}
 .overlay.on{opacity:1;pointer-events:auto}
@@ -199,9 +234,21 @@ button{font-family:inherit;color:inherit;cursor:pointer}
       <div class="box-b" id="stats" style="padding-top:6px;padding-bottom:6px"></div>
     </div>
 
-    <div class="box">
+    <div class="box" id="obsBox">
       <div class="box-h">OBSERVATIONS</div>
-      <textarea class="notes" id="notes" placeholder="Ce que je remarque ce mois-ci…"></textarea>
+      <div class="tabs">
+        <button data-tab="day" class="on">DU JOUR</button>
+        <button data-tab="all">GLOBALES</button>
+      </div>
+      <div id="obsDayPane">
+        <div class="obs-nav">
+          <button id="obsPrev" aria-label="Jour précédent">‹</button>
+          <span id="obsDate"></span>
+          <button id="obsNext" aria-label="Jour suivant">›</button>
+        </div>
+        <textarea class="notes" id="notes" placeholder="Comment s'est passée ta journée ?"></textarea>
+      </div>
+      <div id="obsAllPane" hidden></div>
     </div>
 
     <div class="tools">
@@ -235,6 +282,7 @@ const HABITS = [
   { name:'Workout or stretching',   emoji:'💪' },
   { name:'Morning routine',         emoji:'🌅',
     sub:['Ouvrir la fenêtre','Faire le lit','0,5 L d’eau min','Bain glacé','Petit-déj sans sucre'] },
+    // clic sur la case = tout fait ; « détail » = toucher ce qui n'a PAS été fait
   { name:'No doomscrolling',        emoji:'📵', orange:true },
   { name:'No alcohol & junk food',  emoji:'🥦', orange:true },
   { name:'No gooning',              emoji:'🧠' },
@@ -244,12 +292,12 @@ const MONTHS = ['JANVIER','FÉVRIER','MARS','AVRIL','MAI','JUIN','JUILLET','AOÛ
 const WDAYS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
 const LABEL = { g:'✓ Fait', r:'✕ Pas fait', o:'½ À moitié' };
 
-const KEY='ht-data-v1', NKEY='ht-notes-v1', SKEY='ht-sub-v1', TKEY='ht-theme', STKEY='ht-start';
+const KEY='ht-data-v1', OKEY='ht-obs-v1', MKEY='ht-miss-v1', TKEY='ht-theme', STKEY='ht-start';
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
 const store=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-let data  = load(KEY,{});
-let notes = load(NKEY,{});
-let subs  = load(SKEY,{});
+let data = load(KEY,{});
+let obs  = load(OKEY,{});   // observations journalières { 'YYYY-MM-DD': texte }
+let miss = load(MKEY,{});   // étapes de la morning routine NON faites { 'YYYY-MM-DD': [bool…] }
 
 const pad=n=>String(n).padStart(2,'0');
 const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -350,10 +398,13 @@ function renderWheel(flashKey){
     </g>`;
   }
   for(let d=1;d<=n;d++){
-    const [x,yy]=pt(RO+28,(d-.5)*slot), isT=isCur&&d===td;
-    days+= isT
+    const [x,yy]=pt(RO+28,(d-.5)*slot), isT=isCur&&d===td, dk=keyOf(new Date(y,m,d));
+    const [nx,ny]=pt(RO+48,(d-.5)*slot);
+    const dot = obs[dk] ? `<circle cx="${f(nx)}" cy="${f(ny)}" r="3.5" style="fill:var(--fg)"/>` : '';
+    const fut = new Date(y,m,d)>t;
+    days+=`<g class="${fut?'':'dlabel'}" data-k="${dk}"><circle cx="${f(x)}" cy="${f(yy)}" r="17" fill="transparent"/>${ isT
       ? `<circle cx="${f(x)}" cy="${f(yy)}" r="16" style="fill:var(--fg)"/><text x="${f(x)}" y="${f(yy)}" font-size="15" font-weight="800" text-anchor="middle" dominant-baseline="central" style="fill:var(--bg);font-family:var(--font)">${d}</text>`
-      : `<text class="svgtxt" x="${f(x)}" y="${f(yy)}" font-size="16" font-weight="700" text-anchor="middle" dominant-baseline="central">${d}</text>`;
+      : `<text class="svgtxt" x="${f(x)}" y="${f(yy)}" font-size="16" font-weight="700" text-anchor="middle" dominant-baseline="central">${d}</text>`}${dot}</g>`;
   }
   const todayCol = isCur ? `<path d="${sector(RI,RO,(td-1)*slot,td*slot)}" fill="none" style="stroke:var(--fg)" stroke-width="3.5" pointer-events="none"/>` : '';
   const [a0x,a0y]=pt(RI,0),[b0x,b0y]=pt(RO,0),[a1x,a1y]=pt(RI,SWEEP),[b1x,b1y]=pt(RO,SWEEP);
@@ -398,13 +449,22 @@ function todoHTML(){
     </div>
     <div class="td-bar">${arr.map(s=>`<i class="${s||''}"></i>`).join('')}</div>`;
   const list=HABITS.map((H,h)=>{
-    const s=arr[h], sb=subs[k]||[];
+    const s=arr[h], ms=miss[k]||[];
     const mark = s==='g'?'✓': s==='o'?'½': s==='r'?'✕':'';
-    const subHTML = H.sub ? `<div class="subs">${H.sub.map((x,i)=>`<button class="sub ${sb[i]?'on':''}" data-sub="${i}">${x}</button>`).join('')}</div>` : '';
+    let extra='', subHTML='';
+    if(H.orange) extra=`<button class="half ${s==='o'?'on':''}" data-act="o" title="À moitié">½</button>`;
+    if(H.sub){
+      const nm=ms.filter(Boolean).length;
+      extra=`<button class="more ${subOpen?'on':''}" data-act="exp">${nm?nm+' manqué'+(nm>1?'s':''):'détail'} ${subOpen?'▴':'▾'}</button>`;
+      if(subOpen) subHTML=`<div class="subs-wrap">
+          <div class="subs-hint">Touche ce que tu n'as PAS fait :</div>
+          <div class="subs">${H.sub.map((x,i)=>`<button class="sub ${ms[i]?'miss':''}" data-sub="${i}">${x}</button>`).join('')}</div>
+        </div>`;
+    }
     return `<div class="todo ${s||''} ${popH===h?'pop':''}" data-h="${h}">
       <button class="chk" data-act="g" aria-label="${H.name}">${mark}</button>
       <div class="tbody">
-        <div class="tline" data-act="g"><span class="tn">${pad(h+1)}</span><span class="tname">${H.emoji} ${H.name}</span>${H.orange?`<button class="half ${s==='o'?'on':''}" data-act="o" title="À moitié">½</button>`:''}</div>
+        <div class="tline" data-act="${H.sub?'exp':'g'}"><span class="tn">${pad(h+1)}</span><span class="tname">${H.emoji} ${H.name}</span>${extra}</div>
         ${subHTML}
       </div>
     </div>`;
@@ -422,20 +482,26 @@ function renderTodo(){
   ok.textContent = perfect ? 'JOURNÉE PARFAITE 🔥 →' : "C'EST BON →";
   popH=null;
 }
+let subOpen=false;
+// Morning routine : 0 étape manquée = vert, toutes manquées = rouge, sinon orange.
+function stateFromMiss(ms,n){const c=ms.filter(Boolean).length; return c===0?'g':c===n?'r':'o'}
 function onTodoClick(e){
   const row=e.target.closest('.todo'); if(!row) return;
-  const h=+row.dataset.h, k=keyOf(today()), s=get(k,h);
+  const h=+row.dataset.h, H=HABITS[h], k=keyOf(today()), s=get(k,h);
   const subBtn=e.target.closest('.sub');
   if(subBtn){
-    const i=+subBtn.dataset.sub, n=HABITS[h].sub.length;
-    const sb=subs[k]||Array(n).fill(false); const wasAll=sb.every(Boolean);
-    sb[i]=!sb[i]; subs[k]=sb; store(SKEY,subs);
-    if(sb.every(Boolean)) { set(k,h,'g'); popH=h; }
-    else if(wasAll && s==='g') set(k,h,null);
-    renderAll(); return;
+    const i=+subBtn.dataset.sub, n=H.sub.length;
+    const ms=miss[k]||Array(n).fill(false);
+    ms[i]=!ms[i]; miss[k]=ms; store(MKEY,miss);
+    set(k,h,stateFromMiss(ms,n)); popH=h; renderAll(); return;
   }
   const act=e.target.closest('[data-act]'); if(!act) return;
-  if(act.dataset.act==='o') set(k,h, s==='o'?null:'o');
+  if(act.dataset.act==='exp'){ subOpen=!subOpen; renderTodo(); return; }
+  if(H.sub && act.dataset.act==='g'){            // case cochée = tout fait
+    delete miss[k]; store(MKEY,miss);
+    set(k,h, s?null:'g');
+  }
+  else if(act.dataset.act==='o') set(k,h, s==='o'?null:'o');
   else set(k,h, s==='g'?null:'g');
   popH=h; renderAll();
 }
@@ -459,14 +525,50 @@ function renderSide(){
       <span class="stk">${s?'🔥 '+s+' j':''}</span>
     </div>`;
   }).join('');
-  $('#notes').value = notes[`${y}-${pad(m+1)}`]||'';
+  renderObs();
 }
+
+/* ================= OBSERVATIONS ================= */
+let obsTab='day', obsKey=keyOf(today());
+function renderObs(){
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===obsTab));
+  $('#obsDayPane').hidden = obsTab!=='day';
+  $('#obsAllPane').hidden = obsTab!=='all';
+  const d=parseKey(obsKey), t=today();
+  $('#obsDate').textContent = (+d===+t?"Aujourd'hui · ":'') + `${WDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].toLowerCase()}`;
+  $('#obsNext').disabled = d>=t;
+  if(document.activeElement!==$('#notes')) $('#notes').value = obs[obsKey]||'';
+  if(obsTab==='all'){
+    const keys=Object.keys(obs).filter(k=>obs[k]&&obs[k].trim()).sort().reverse();
+    let html='', lastM='';
+    for(const k of keys){
+      const dd=parseKey(k), mLabel=`${MONTHS[dd.getMonth()]} ${dd.getFullYear()}`;
+      if(mLabel!==lastM){ html+=`<div class="obs-month">${mLabel}</div>`; lastM=mLabel; }
+      const esc=obs[k].replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+      html+=`<button class="obs-item" data-k="${k}">
+        <div class="oi-h"><span class="oi-d">${WDAYS[dd.getDay()]} ${dd.getDate()}</span>
+        <span class="oi-dots">${HABITS.map((_,h)=>`<i class="${get(k,h)||''}"></i>`).join('')}</span></div>
+        <div class="oi-t">${esc}</div></button>`;
+    }
+    $('#obsAllPane').innerHTML = html || `<div class="obs-empty">Aucune observation pour l'instant.<br>Écris-en une dans « Du jour ».</div>`;
+  }
+}
+function openObsDay(k){ obsKey=k; obsTab='day'; renderObs(); }
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{obsTab=b.dataset.tab; renderObs();});
+$('#obsPrev').onclick=()=>openObsDay(keyOf(addDays(parseKey(obsKey),-1)));
+$('#obsNext').onclick=()=>openObsDay(keyOf(addDays(parseKey(obsKey),1)));
+$('#obsAllPane').addEventListener('click',e=>{const it=e.target.closest('.obs-item'); if(it) openObsDay(it.dataset.k);});
+$('#notes').addEventListener('input',e=>{
+  const v=e.target.value; if(v.trim()) obs[obsKey]=v; else delete obs[obsKey];
+  store(OKEY,obs);
+  renderWheel();   // met à jour le petit point sous le jour
+});
 function renderAll(flashKey){renderWheel(flashKey);renderTodo();renderSide()}
 
 /* ================= WHEEL INTERACTION ================= */
 const tip=$('#tip');
 function cycle(h,cur,isPast){
-  let order = HABITS[h].orange ? [null,'g','o','r'] : [null,'g','r'];
+  let order = (HABITS[h].orange||HABITS[h].sub) ? [null,'g','o','r'] : [null,'g','r'];
   if(isPast) order=order.slice(1);              // un jour passé n'est jamais « vide »
   const i=order.indexOf(cur);
   return order[(i+1)%order.length];
@@ -478,7 +580,9 @@ $('#wheel').addEventListener('click',e=>{
     set(k,h,cycle(h,get(k,h),date<today())); renderAll(); showTip(e,h,d); return;
   }
   const r=e.target.closest('.hrow');
-  if(r) toggleFocus(+r.dataset.h);
+  if(r) return toggleFocus(+r.dataset.h);
+  const dl=e.target.closest('.dlabel');      // clic sur un numéro de jour → ses observations
+  if(dl){ openObsDay(dl.dataset.k); $('#obsBox').scrollIntoView({behavior:'smooth',block:'center'}); }
 });
 let focused=null;
 function toggleFocus(h){
@@ -488,8 +592,9 @@ function toggleFocus(h){
   if(focused!==null) w.querySelectorAll(`[data-h="${focused}"]`).forEach(x=>x.classList.add('hl'));
 }
 function showTip(e,h,d){
-  const date=new Date(view.y,view.m,d), s=get(keyOf(date),h);
-  tip.textContent=`${WDAYS[date.getDay()].slice(0,3)}. ${d} ${MONTHS[view.m].toLowerCase()} · ${HABITS[h].name} — ${s?LABEL[s]:'pas encore coché'}`;
+  const date=new Date(view.y,view.m,d), k=keyOf(date), s=get(k,h), H=HABITS[h];
+  const ms = H.sub && s==='o' ? H.sub.filter((_,i)=>(miss[k]||[])[i]) : [];
+  tip.textContent=`${WDAYS[date.getDay()].slice(0,3)}. ${d} ${MONTHS[view.m].toLowerCase()} · ${H.name} — ${s?LABEL[s]:'pas encore coché'}${ms.length?' (manqué : '+ms.join(', ').toLowerCase()+')':''}`;
   tip.style.left=Math.min(e.clientX+14, innerWidth-tip.offsetWidth-10)+'px';
   tip.style.top=(e.clientY+16)+'px';
   tip.classList.add('on');
@@ -517,7 +622,6 @@ document.addEventListener('keydown',e=>{ if(e.key==='Escape' && $('#modal').clas
 /* ================= MISC ================= */
 $('#prev').onclick=()=>{view.m--; if(view.m<0){view.m=11;view.y--} focused=null; $('#wheel').classList.remove('focus'); renderWheel(); renderSide()};
 $('#next').onclick=()=>{view.m++; if(view.m>11){view.m=0;view.y++} focused=null; $('#wheel').classList.remove('focus'); renderWheel(); renderSide()};
-$('#notes').addEventListener('input',e=>{notes[`${view.y}-${pad(view.m+1)}`]=e.target.value; store(NKEY,notes)});
 
 function applyThemeBtn(){
   const dark=document.documentElement.dataset.theme==='dark';
@@ -532,7 +636,7 @@ $('#themeBtn').onclick=()=>{
 };
 
 $('#exportBtn').onclick=()=>{
-  const blob=new Blob([JSON.stringify({data,notes,subs,start:startKey()},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({data,obs,miss,start:startKey()},null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`habits-${keyOf(today())}.json`; a.click();
 };
 $('#importBtn').onclick=()=>$('#importFile').click();
@@ -541,9 +645,9 @@ $('#importFile').onchange=e=>{
   file.text().then(txt=>{
     try{
       const j=JSON.parse(txt);
-      Object.assign(data,j.data||{}); Object.assign(notes,j.notes||{}); Object.assign(subs,j.subs||{});
+      Object.assign(data,j.data||{}); Object.assign(obs,j.obs||{}); Object.assign(miss,j.miss||{});
       if(j.start && j.start<startKey()) try{localStorage.setItem(STKEY,j.start)}catch(_){}
-      store(KEY,data); store(NKEY,notes); store(SKEY,subs); renderAll();
+      store(KEY,data); store(OKEY,obs); store(MKEY,miss); renderAll();
     }catch(err){ $('#importBtn').textContent='✕ FICHIER INVALIDE'; setTimeout(()=>$('#importBtn').textContent='⬆ IMPORTER',2000); }
   });
   e.target.value='';
@@ -553,6 +657,7 @@ $('#importFile').onchange=e=>{
 function tick(){
   const k=keyOf(today());
   if(k!==curDay){                     // on vient de passer minuit
+    if(obsKey===curDay) obsKey=k;
     curDay=k; closePastDays();
     const t=today(); view={y:t.getFullYear(),m:t.getMonth()};
     renderAll();
@@ -564,6 +669,7 @@ setInterval(tick,20000);
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) tick(); });
 
 /* ================= BOOT ================= */
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
 applyThemeBtn();
 renderAll();
 if(HABITS.some((_,h)=>!get(keyOf(today()),h))) setTimeout(openModal,400);

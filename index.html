@@ -825,6 +825,9 @@ document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ tick();
 /* ================= BOOT ================= */
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
 applyThemeBtn();
+// Inside a sandboxed frame (e.g. a claude.ai preview) network sync and downloads are blocked: hide them.
+const FRAMED=(()=>{try{return window.self!==window.top}catch(e){return true}})();
+if(FRAMED){ sync=null; ['#syncBtn','#exportBtn','#syncStatus'].forEach(s=>$(s).style.display='none'); }
 renderAll();
 renderSyncStatus();
 syncNow();

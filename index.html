@@ -39,9 +39,9 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .theme-btn:hover{transform:rotate(-18deg) scale(1.08)}
 
 /* ---------- layout ---------- */
-.wrap{max-width:1500px;margin:0 auto;padding:28px 32px 48px;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:48px;align-items:start}
-.chart-col{position:relative}
-#wheel{width:100%;height:auto;display:block;max-height:calc(100vh - 56px)}
+.wrap{max-width:1500px;margin:0 auto;padding:28px 32px 48px;display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:48px;align-items:start}
+.chart-col{position:sticky;top:20px}
+#wheel{width:100%;height:auto;display:block;max-height:calc(100vh - 40px)}
 .side{display:flex;flex-direction:column;gap:22px;padding-top:44px}
 
 .title{text-align:right;line-height:1}
@@ -58,19 +58,41 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .box-h{background:var(--fg);color:var(--bg);height:44px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;letter-spacing:1.5px}
 .box-b{padding:16px}
 
-/* today */
-.today-date{font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-.today-row{display:flex;align-items:center;gap:14px}
-.today-score{font-size:44px;font-weight:900;line-height:1;min-width:92px}
-.today-score small{font-size:18px;font-weight:700;color:var(--muted)}
-.dots{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;flex:1}
-.dot{aspect-ratio:1;border:2px solid var(--fg);background:transparent;transition:background .3s}
-.dot.g,.pseg.g{background:var(--g);border-color:var(--g)}
-.dot.r,.pseg.r{background:var(--r);border-color:var(--r)}
-.dot.o,.pseg.o{background:var(--o);border-color:var(--o)}
-.cta{margin-top:14px;width:100%;height:50px;border:3px solid var(--fg);background:var(--fg);color:var(--bg);font-size:15px;font-weight:800;letter-spacing:1.5px;transition:transform .15s}
-.cta:hover{transform:translateY(-2px)}
-.cta.ghost{background:transparent;color:var(--fg)}
+/* ---------- to-do ---------- */
+.td-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
+.td-date{font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase}
+.td-clock{font-size:12px;font-weight:700;color:var(--muted);margin-top:4px}
+.td-clock b{color:var(--fg)}
+.td-score{font-size:46px;font-weight:900;line-height:.85;white-space:nowrap}
+.td-score small{font-size:18px;font-weight:700;color:var(--muted)}
+.td-bar{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:6px}
+.td-bar i{height:8px;border:1.6px solid var(--thin);transition:background .3s,border-color .3s}
+.td-bar i.g{background:var(--g);border-color:var(--g)}
+.td-bar i.o{background:var(--o);border-color:var(--o)}
+.td-bar i.r{background:var(--r);border-color:var(--r)}
+
+.todo{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1.6px solid var(--thin)}
+.todo:last-child{border-bottom:0}
+.chk{flex:none;width:30px;height:30px;border:2.5px solid var(--fg);background:transparent;font-size:16px;font-weight:900;display:grid;place-items:center;color:#0b0b0c;transition:background .2s,border-color .2s,transform .15s;padding:0}
+.chk:hover{transform:scale(1.08)}
+.todo.g .chk{background:var(--g);border-color:var(--g)}
+.todo.o .chk{background:var(--o);border-color:var(--o)}
+.todo.r .chk{background:var(--r);border-color:var(--r)}
+.todo.pop .chk{animation:pop .35s cubic-bezier(.2,.9,.3,1.6)}
+@keyframes pop{0%{transform:scale(.6)}100%{transform:scale(1)}}
+.tbody{flex:1;min-width:0}
+.tline{display:flex;align-items:center;gap:10px;min-height:30px;cursor:pointer}
+.tn{font-weight:800;font-size:13px;color:var(--muted);flex:none}
+.tname{font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.4px;flex:1;transition:color .2s}
+.todo.g .tname,.todo.o .tname{text-decoration:line-through;text-decoration-thickness:2px;color:var(--muted)}
+.half{flex:none;border:2px solid var(--o);color:var(--o);background:transparent;font-weight:900;height:28px;padding:0 9px;font-size:12px;letter-spacing:.5px}
+.half.on,.half:hover{background:var(--o);color:#0b0b0c}
+.subs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.sub{border:1.6px solid var(--thin);background:transparent;font-size:12px;font-weight:700;padding:5px 9px;transition:all .2s}
+.sub::before{content:"○ "}
+.sub.on{border-color:var(--g);color:var(--g)}
+.sub.on::before{content:"● "}
+.td-note{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.3px;margin-top:10px;line-height:1.5}
 
 /* stats */
 .stat{display:grid;grid-template-columns:26px 1fr auto;gap:4px 10px;align-items:center;padding:7px 0;border-bottom:1.6px solid var(--thin);cursor:default}
@@ -111,72 +133,32 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .tip{position:fixed;z-index:50;pointer-events:none;background:var(--fg);color:var(--bg);font-size:12px;font-weight:700;padding:7px 10px;letter-spacing:.3px;opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;white-space:nowrap}
 .tip.on{opacity:1;transform:none}
 
-/* ---------- quiz ---------- */
+/* ---------- entry modal (to-do) ---------- */
 .overlay{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:20px;
   background:rgba(0,0,0,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   opacity:0;pointer-events:none;transition:opacity .3s}
 .overlay.on{opacity:1;pointer-events:auto}
-.card{width:min(580px,100%);background:var(--bg);border:3px solid var(--fg);box-shadow:var(--shadow);transform:translateY(16px) scale(.98);transition:transform .35s cubic-bezier(.2,.9,.3,1.2)}
+.card{width:min(560px,100%);max-height:calc(100vh - 40px);display:flex;flex-direction:column;background:var(--bg);border:3px solid var(--fg);box-shadow:var(--shadow);transform:translateY(16px) scale(.98);transition:transform .35s cubic-bezier(.2,.9,.3,1.2)}
 .overlay.on .card{transform:none}
-.card-h{background:var(--fg);color:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 18px;height:52px}
+.card-h{flex:none;background:var(--fg);color:var(--bg);display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 18px;height:52px}
 .card-h b{font-size:18px;font-weight:900;letter-spacing:2px}
 .card-h .x{width:38px;height:38px;border:0;background:transparent;color:var(--bg);font-size:20px;font-weight:800}
-.card-b{padding:22px 26px 24px}
-.pills{display:flex;gap:8px;margin-bottom:16px}
-.pill{flex:1;height:36px;border:2px solid var(--fg);background:transparent;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase}
-.pill.on{background:var(--fg);color:var(--bg)}
-.prog{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-bottom:22px}
-.pseg{height:8px;border:1.6px solid var(--thin);background:transparent;transition:background .3s}
-.pseg.cur{border-color:var(--fg);border-width:2.5px}
-.q{animation:enter .35s cubic-bezier(.2,.9,.3,1) both}
-@keyframes enter{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
-.q-top{display:flex;align-items:flex-end;justify-content:space-between}
-.q-num{font-size:84px;font-weight:900;line-height:.85;letter-spacing:-2px}
-.q-num small{font-size:22px;color:var(--muted);letter-spacing:0;font-weight:800}
-.q-emoji{font-size:58px;line-height:1}
-.q h2{margin:16px 0 6px;font-size:28px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;line-height:1.1}
-.q p{margin:0 0 18px;font-size:16px;font-weight:600;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:-4px 0 20px}
-.chip{border:2px solid var(--fg);background:transparent;padding:7px 12px;font-size:13px;font-weight:700;transition:all .2s}
-.chip.on{background:var(--g);border-color:var(--g);color:#0b0b0c}
-.chip.on::before{content:"✓ "}
-.btns{display:grid;gap:10px}
-.btns.two{grid-template-columns:1fr 1fr}
-.btns.three{grid-template-columns:1fr 1fr 1fr}
-.ans{height:66px;border:3px solid currentColor;background:transparent;font-size:16px;font-weight:900;letter-spacing:1.2px;text-transform:uppercase;transition:transform .15s,background .2s,color .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-.ans kbd{font:700 10px var(--font);opacity:.6;letter-spacing:1px}
-.ans.g{color:var(--g)} .ans.r{color:var(--r)} .ans.o{color:var(--o)}
-.ans:hover,.ans.sel{transform:translateY(-3px)}
-.ans.g:hover,.ans.g.sel{background:var(--g);color:#0b0b0c}
-.ans.r:hover,.ans.r.sel{background:var(--r);color:#0b0b0c}
-.ans.o:hover,.ans.o.sel{background:var(--o);color:#0b0b0c}
-.ans.g.ready{animation:pulse 1.2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}50%{box-shadow:0 0 0 10px rgba(34,197,94,0)}}
-.q-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px}
-.link{border:0;background:transparent;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:6px 0}
-.link:hover{color:var(--fg)}
-.link:disabled{opacity:.3;cursor:default}
-
-.sum{text-align:center;animation:enter .4s both}
-.sum .big{font-size:110px;font-weight:900;line-height:.9;letter-spacing:-3px}
-.sum .big small{font-size:34px;color:var(--muted);letter-spacing:0}
-.sum .msg{font-size:20px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;margin:12px 0 20px}
-.sum .dots{max-width:380px;margin:0 auto 24px}
-.sum .row{display:flex;gap:10px}
-.sum .row .cta{margin:0}
+.card-b{padding:20px 24px 22px;overflow:auto}
+.card .td-score{font-size:64px}
+.cta{margin-top:16px;width:100%;height:54px;border:3px solid var(--fg);background:var(--fg);color:var(--bg);font-size:15px;font-weight:800;letter-spacing:1.5px;transition:transform .15s}
+.cta:hover{transform:translateY(-2px)}
+.cta.perfect{background:var(--g);border-color:var(--g);color:#0b0b0c}
 
 @media (max-width:1100px){
   .wrap{grid-template-columns:1fr;gap:24px;padding:20px 14px 40px}
+  .chart-col{position:static;padding-top:56px}
   .side{padding-top:0}
   #wheel{max-height:none}
   .title h1{font-size:52px}
-  .chart-col{padding-top:56px}
 }
 @media (max-width:520px){
-  .q-num{font-size:64px}.q-emoji{font-size:46px}.q h2{font-size:23px}
-  .ans{height:60px;font-size:14px}
-  .card-b{padding:18px 16px 20px}
-  .sum .big{font-size:84px}
+  .card-b{padding:16px 14px 18px}
+  .card .td-score{font-size:52px}
 }
 </style>
 </head>
@@ -195,28 +177,21 @@ button{font-family:inherit;color:inherit;cursor:pointer}
       <h1>HABITS</h1>
     </header>
 
-    <div class="month-nav">
-      <button id="prev" aria-label="Mois précédent">‹</button>
-      <span id="monthLabel"></span>
-      <button id="next" aria-label="Mois suivant">›</button>
-    </div>
-
     <div class="box">
-      <div class="box-h">AUJOURD'HUI</div>
-      <div class="box-b">
-        <div class="today-date" id="todayDate"></div>
-        <div class="today-row">
-          <div class="today-score" id="todayScore"></div>
-          <div class="dots" id="todayDots"></div>
-        </div>
-        <button class="cta" id="checkinBtn">CHECK-IN DU JOUR →</button>
-      </div>
+      <div class="box-h">TO DO · AUJOURD'HUI</div>
+      <div class="box-b" id="todoInline"></div>
     </div>
 
     <div class="legend">
       <span><i style="background:var(--g)"></i>Fait</span>
       <span><i style="background:var(--o)"></i>À moitié</span>
       <span><i style="background:var(--r)"></i>Pas fait</span>
+    </div>
+
+    <div class="month-nav">
+      <button id="prev" aria-label="Mois précédent">‹</button>
+      <span id="monthLabel"></span>
+      <button id="next" aria-label="Mois suivant">›</button>
     </div>
 
     <div class="box">
@@ -237,10 +212,13 @@ button{font-family:inherit;color:inherit;cursor:pointer}
   </aside>
 </main>
 
-<div class="overlay" id="quiz" aria-modal="true" role="dialog">
+<div class="overlay" id="modal" aria-modal="true" role="dialog">
   <div class="card">
-    <div class="card-h"><b>CHECK-IN</b><button class="x" id="quizClose" aria-label="Fermer">✕</button></div>
-    <div class="card-b" id="quizBody"></div>
+    <div class="card-h"><b id="modalTitle">TO DO</b><button class="x" id="modalClose" aria-label="Fermer">✕</button></div>
+    <div class="card-b">
+      <div id="todoModal"></div>
+      <button class="cta" id="modalOk">C'EST BON →</button>
+    </div>
   </div>
 </div>
 
@@ -249,31 +227,33 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 <script>
 /* ================= DATA ================= */
 const HABITS = [
-  { name:'Day planning',            emoji:'🗓️', q:'As-tu planifié ta journée ?' },
-  { name:'School work',             emoji:'📚', q:'As-tu travaillé tes cours ?' },
-  { name:'Project work',            emoji:'🚀', q:'As-tu avancé sur un projet ?' },
-  { name:'Norwegian',               emoji:'🇳🇴', q:'As-tu pratiqué le norvégien ?' },
-  { name:'Read 15 min',             emoji:'📖', q:'As-tu lu au moins 15 minutes ?' },
-  { name:'Workout or stretching',   emoji:'💪', q:'As-tu fait du sport ou des étirements ?' },
-  { name:'Morning routine',         emoji:'🌅', q:'As-tu fait ta routine du matin complète ?',
-    sub:['Ouvrir la fenêtre','Faire le lit','Boire 0,5 L d’eau min','Bain glacé','Petit-déj sans sucre'] },
-  { name:'No doomscrolling',        emoji:'📵', q:'As-tu évité le doomscrolling ?', orange:true },
-  { name:'No alcohol & junk food',  emoji:'🥦', q:'Zéro alcool et zéro junk food ?', orange:true },
-  { name:'No gooning',              emoji:'🧠', q:'As-tu tenu le no gooning ?' },
+  { name:'Day planning',            emoji:'🗓️' },
+  { name:'School work',             emoji:'📚' },
+  { name:'Project work',            emoji:'🚀' },
+  { name:'Norwegian',               emoji:'🇳🇴' },
+  { name:'Read 15 min',             emoji:'📖' },
+  { name:'Workout or stretching',   emoji:'💪' },
+  { name:'Morning routine',         emoji:'🌅',
+    sub:['Ouvrir la fenêtre','Faire le lit','0,5 L d’eau min','Bain glacé','Petit-déj sans sucre'] },
+  { name:'No doomscrolling',        emoji:'📵', orange:true },
+  { name:'No alcohol & junk food',  emoji:'🥦', orange:true },
+  { name:'No gooning',              emoji:'🧠' },
 ];
 const N = HABITS.length;
 const MONTHS = ['JANVIER','FÉVRIER','MARS','AVRIL','MAI','JUIN','JUILLET','AOÛT','SEPTEMBRE','OCTOBRE','NOVEMBRE','DÉCEMBRE'];
 const WDAYS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-const LABEL = { g:'✓ Fait', r:'✕ Pas fait', o:'~ À moitié' };
+const LABEL = { g:'✓ Fait', r:'✕ Pas fait', o:'½ À moitié' };
 
-const KEY='ht-data-v1', NKEY='ht-notes-v1', TKEY='ht-theme';
+const KEY='ht-data-v1', NKEY='ht-notes-v1', SKEY='ht-sub-v1', TKEY='ht-theme', STKEY='ht-start';
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
 const store=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-let data = load(KEY,{});
+let data  = load(KEY,{});
 let notes = load(NKEY,{});
+let subs  = load(SKEY,{});
 
 const pad=n=>String(n).padStart(2,'0');
 const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseKey=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)};
 const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const get=(k,h)=>(data[k]||[])[h]||null;
@@ -284,7 +264,32 @@ function set(k,h,v){
   store(KEY,data);
 }
 const $=s=>document.querySelector(s);
-const T0=today();
+
+/* ================= MIDNIGHT CLOSE =================
+   Le suivi démarre le premier jour d'utilisation. Chaque jour passé
+   (à partir de ce jour-là) dont une habitude n'a pas été cochée
+   devient automatiquement « Pas fait » (rouge). */
+function startKey(){
+  let s=null; try{s=localStorage.getItem(STKEY)}catch(e){}
+  if(!s){
+    const keys=Object.keys(data).sort(), tk=keyOf(today());
+    s = keys[0] && keys[0]<tk ? keys[0] : tk;
+    try{localStorage.setItem(STKEY,s)}catch(e){}
+  }
+  return s;
+}
+function closePastDays(){
+  const t=today(); let d=parseKey(startKey()), changed=false;
+  while(d<t){
+    const k=keyOf(d);
+    for(let h=0;h<N;h++) if(!get(k,h)){ if(!data[k]) data[k]=Array(N).fill(null); data[k][h]='r'; changed=true; }
+    d=addDays(d,1);
+  }
+  if(changed) store(KEY,data);
+}
+closePastDays();
+
+let T0=today(), curDay=keyOf(T0);
 let view={y:T0.getFullYear(), m:T0.getMonth()};
 
 /* ================= WHEEL GEOMETRY ================= */
@@ -332,11 +337,8 @@ function renderWheel(flashKey){
       cells+=`<path class="${cls.join(' ')}" data-h="${h}" data-d="${d}" d="${sector(ringInner(h),ringOuter(h),(d-1)*slot,d*slot)}"${flashKey===k?` style="animation-delay:${h*70}ms"`:''}/>`;
     }
   }
-  // thin ring arcs
   for(let k=1;k<N;k++) thin+=`<path d="${arc(RO-k*RW,0,SWEEP)}"/>`;
-  // radial day separators
   for(let d=1;d<n;d++){const [x1,y1]=pt(RI,d*slot),[x2,y2]=pt(RO,d*slot);thin+=`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}"/>`}
-  // left rows (top-left quadrant), like the paper version
   for(let k=1;k<=N;k++) thin+=`<line x1="${CX-RO+30}" y1="${CY-(RO-k*RW)}" x2="${CX}" y2="${CY-(RO-k*RW)}"/>`;
   for(let h=0;h<N;h++){
     const yb=CY-ringInner(h), p=st.per[h].pct;
@@ -347,7 +349,6 @@ function renderWheel(flashKey){
       <text class="svgtxt" x="${CX-12}" y="${yb-9}" font-size="13" font-weight="800" text-anchor="end" style="fill:var(--muted)">${p===null?'':p+'%'}</text>
     </g>`;
   }
-  // day numbers
   for(let d=1;d<=n;d++){
     const [x,yy]=pt(RO+28,(d-.5)*slot), isT=isCur&&d===td;
     days+= isT
@@ -378,20 +379,74 @@ function renderWheel(flashKey){
     </g>`;
 }
 
+/* ================= TO-DO ================= */
+let popH=null;
+function untilMidnight(){
+  const now=new Date(), mid=addDays(today(),1), mins=Math.max(0,Math.ceil((mid-now)/60000));
+  return `${Math.floor(mins/60)} h ${pad(mins%60)}`;
+}
+function todoHTML(){
+  const t=today(), k=keyOf(t);
+  const arr=HABITS.map((_,h)=>get(k,h)), g=arr.filter(s=>s==='g').length, o=arr.filter(s=>s==='o').length;
+  const left=N-arr.filter(Boolean).length;
+  const head=`<div class="td-head">
+      <div>
+        <div class="td-date">${WDAYS[t.getDay()]} ${t.getDate()} ${MONTHS[t.getMonth()].toLowerCase()}</div>
+        <div class="td-clock">Clôture dans <b class="js-clock">${untilMidnight()}</b> · ${left?`${left} à cocher`:'tout est coché'}</div>
+      </div>
+      <div class="td-score">${g}<small>/${N}${o?` +${o}½`:''}</small></div>
+    </div>
+    <div class="td-bar">${arr.map(s=>`<i class="${s||''}"></i>`).join('')}</div>`;
+  const list=HABITS.map((H,h)=>{
+    const s=arr[h], sb=subs[k]||[];
+    const mark = s==='g'?'✓': s==='o'?'½': s==='r'?'✕':'';
+    const subHTML = H.sub ? `<div class="subs">${H.sub.map((x,i)=>`<button class="sub ${sb[i]?'on':''}" data-sub="${i}">${x}</button>`).join('')}</div>` : '';
+    return `<div class="todo ${s||''} ${popH===h?'pop':''}" data-h="${h}">
+      <button class="chk" data-act="g" aria-label="${H.name}">${mark}</button>
+      <div class="tbody">
+        <div class="tline" data-act="g"><span class="tn">${pad(h+1)}</span><span class="tname">${H.emoji} ${H.name}</span>${H.orange?`<button class="half ${s==='o'?'on':''}" data-act="o" title="À moitié">½</button>`:''}</div>
+        ${subHTML}
+      </div>
+    </div>`;
+  }).join('');
+  return head+list+`<div class="td-note">Ce qui n'est pas coché à minuit passe automatiquement en rouge.</div>`;
+}
+function renderTodo(){
+  const html=todoHTML();
+  $('#todoInline').innerHTML=html;
+  $('#todoModal').innerHTML=html;
+  const t=today(), arr=HABITS.map((_,h)=>get(keyOf(t),h));
+  const perfect=arr.every(s=>s==='g');
+  $('#modalTitle').textContent=`TO DO · ${WDAYS[t.getDay()].toUpperCase()} ${t.getDate()}`;
+  const ok=$('#modalOk'); ok.classList.toggle('perfect',perfect);
+  ok.textContent = perfect ? 'JOURNÉE PARFAITE 🔥 →' : "C'EST BON →";
+  popH=null;
+}
+function onTodoClick(e){
+  const row=e.target.closest('.todo'); if(!row) return;
+  const h=+row.dataset.h, k=keyOf(today()), s=get(k,h);
+  const subBtn=e.target.closest('.sub');
+  if(subBtn){
+    const i=+subBtn.dataset.sub, n=HABITS[h].sub.length;
+    const sb=subs[k]||Array(n).fill(false); const wasAll=sb.every(Boolean);
+    sb[i]=!sb[i]; subs[k]=sb; store(SKEY,subs);
+    if(sb.every(Boolean)) { set(k,h,'g'); popH=h; }
+    else if(wasAll && s==='g') set(k,h,null);
+    renderAll(); return;
+  }
+  const act=e.target.closest('[data-act]'); if(!act) return;
+  if(act.dataset.act==='o') set(k,h, s==='o'?null:'o');
+  else set(k,h, s==='g'?null:'g');
+  popH=h; renderAll();
+}
+$('#todoInline').addEventListener('click',onTodoClick);
+$('#todoModal').addEventListener('click',onTodoClick);
+
 /* ================= SIDE ================= */
 function renderSide(){
-  const {y,m}=view, t=today(), k=keyOf(t);
+  const {y,m}=view, t=today();
   $('#monthLabel').textContent=`${MONTHS[m]} ${y}`;
   $('#next').disabled = (y>t.getFullYear()) || (y===t.getFullYear() && m>=t.getMonth());
-
-  const arr=HABITS.map((_,h)=>get(k,h)), g=arr.filter(s=>s==='g').length, done=arr.filter(Boolean).length;
-  $('#todayDate').textContent=`${WDAYS[t.getDay()]} ${t.getDate()} ${MONTHS[t.getMonth()].toLowerCase()} · ${done}/${N} renseignés`;
-  $('#todayScore').innerHTML=`${g}<small>/${N}</small>`;
-  $('#todayDots').innerHTML=arr.map((s,h)=>`<div class="dot ${s||''}" title="${HABITS[h].name}"></div>`).join('');
-  const btn=$('#checkinBtn');
-  if(done===N){btn.textContent='✓ JOURNÉE COMPLÈTE · MODIFIER';btn.classList.add('ghost')}
-  else{btn.textContent=done?`CONTINUER LE CHECK-IN (${done}/${N}) →`:'CHECK-IN DU JOUR →';btn.classList.remove('ghost')}
-
   const st=monthStats(y,m);
   $('#stats').innerHTML=st.per.map((p,h)=>{
     const w=x=>p.tot?(x/p.tot*100):0, s=streak(h);
@@ -404,22 +459,23 @@ function renderSide(){
       <span class="stk">${s?'🔥 '+s+' j':''}</span>
     </div>`;
   }).join('');
-
   $('#notes').value = notes[`${y}-${pad(m+1)}`]||'';
 }
-function renderAll(flashKey){renderWheel(flashKey);renderSide()}
+function renderAll(flashKey){renderWheel(flashKey);renderTodo();renderSide()}
 
 /* ================= WHEEL INTERACTION ================= */
 const tip=$('#tip');
-function cycle(h,cur){
-  const order = HABITS[h].orange ? [null,'g','o','r'] : [null,'g','r'];
-  return order[(order.indexOf(cur)+1)%order.length];
+function cycle(h,cur,isPast){
+  let order = HABITS[h].orange ? [null,'g','o','r'] : [null,'g','r'];
+  if(isPast) order=order.slice(1);              // un jour passé n'est jamais « vide »
+  const i=order.indexOf(cur);
+  return order[(i+1)%order.length];
 }
 $('#wheel').addEventListener('click',e=>{
   const c=e.target.closest('.cell');
   if(c){
-    const h=+c.dataset.h, d=+c.dataset.d, k=keyOf(new Date(view.y,view.m,d));
-    set(k,h,cycle(h,get(k,h))); renderAll(); showTip(e,h,d); return;
+    const h=+c.dataset.h, d=+c.dataset.d, date=new Date(view.y,view.m,d), k=keyOf(date);
+    set(k,h,cycle(h,get(k,h),date<today())); renderAll(); showTip(e,h,d); return;
   }
   const r=e.target.closest('.hrow');
   if(r) toggleFocus(+r.dataset.h);
@@ -433,7 +489,7 @@ function toggleFocus(h){
 }
 function showTip(e,h,d){
   const date=new Date(view.y,view.m,d), s=get(keyOf(date),h);
-  tip.textContent=`${WDAYS[date.getDay()].slice(0,3)}. ${d} ${MONTHS[view.m].toLowerCase()} · ${HABITS[h].name} — ${s?LABEL[s]:'non renseigné'}`;
+  tip.textContent=`${WDAYS[date.getDay()].slice(0,3)}. ${d} ${MONTHS[view.m].toLowerCase()} · ${HABITS[h].name} — ${s?LABEL[s]:'pas encore coché'}`;
   tip.style.left=Math.min(e.clientX+14, innerWidth-tip.offsetWidth-10)+'px';
   tip.style.top=(e.clientY+16)+'px';
   tip.classList.add('on');
@@ -444,103 +500,23 @@ $('#wheel').addEventListener('mousemove',e=>{
 });
 $('#wheel').addEventListener('mouseleave',()=>tip.classList.remove('on'));
 $('#stats').addEventListener('mouseover',e=>{const s=e.target.closest('.stat'); if(s&&focused!==+s.dataset.h){focused=null;toggleFocus(+s.dataset.h)}});
-$('#stats').addEventListener('mouseleave',()=>{focused=0;toggleFocus(0)});
+$('#stats').addEventListener('mouseleave',()=>{focused=null;$('#wheel').classList.remove('focus')});
 
-/* ================= QUIZ ================= */
-const Q={key:null,date:null,i:0,summary:false,sub:new Set()};
-const firstUnanswered=k=>{for(let h=0;h<N;h++) if(!get(k,h)) return h; return -1};
-const isComplete=k=>firstUnanswered(k)===-1;
-
-function openQuiz(date){
-  Q.date=date; Q.key=keyOf(date);
-  const fu=firstUnanswered(Q.key); Q.i=fu<0?0:fu; Q.summary=false; Q.sub=new Set();
-  $('#quiz').classList.add('on'); renderQuiz();
+/* ================= MODAL ================= */
+function openModal(){ $('#modal').classList.add('on'); }
+function closeModal(){
+  $('#modal').classList.remove('on');
+  const t=today(); view={y:t.getFullYear(),m:t.getMonth()};
+  renderWheel(keyOf(t)); renderSide();
 }
-function closeQuiz(){
-  $('#quiz').classList.remove('on');
-  const d=Q.date;
-  if(d){ view={y:d.getFullYear(),m:d.getMonth()}; renderAll(Q.key); }
-}
-function dateTitle(d){
-  const t=today(); if(+d===+t) return "aujourd'hui"; if(+d===+addDays(t,-1)) return 'hier';
-  return `${d.getDate()} ${MONTHS[d.getMonth()].toLowerCase()}`;
-}
-function renderQuiz(){
-  const body=$('#quizBody'), t=today(), y=addDays(t,-1);
-  const isT=+Q.date===+t;
-  const pills=`<div class="pills">
-     <button class="pill ${!isT?'on':''}" data-day="-1">Hier · ${y.getDate()}/${pad(y.getMonth()+1)}</button>
-     <button class="pill ${isT?'on':''}" data-day="0">Aujourd'hui · ${t.getDate()}/${pad(t.getMonth()+1)}</button>
-   </div>`;
-  const prog=`<div class="prog">${HABITS.map((_,h)=>`<div class="pseg ${get(Q.key,h)||''} ${(!Q.summary&&h===Q.i)?'cur':''}"></div>`).join('')}</div>`;
-
-  if(Q.summary){
-    const arr=HABITS.map((_,h)=>get(Q.key,h)), g=arr.filter(s=>s==='g').length, o=arr.filter(s=>s==='o').length;
-    const msg = g===N?'Journée parfaite 🔥': g>=7?'Solide, Boss 💪': g>=4?'Ça avance 👊':'Demain on se rattrape';
-    const todayLeft = !isT && !isComplete(keyOf(t));
-    body.innerHTML = pills+prog+`<div class="sum">
-      <div class="big">${g}<small>/${N}</small></div>
-      <div class="msg">${msg}${o?` · ${o} à moitié`:''}</div>
-      <div class="dots">${arr.map(s=>`<div class="dot ${s||''}"></div>`).join('')}</div>
-      <div class="row">
-        <button class="cta" id="sumClose">VOIR MA GRILLE →</button>
-        ${todayLeft?`<button class="cta ghost" id="sumToday">REMPLIR AUJOURD'HUI</button>`:''}
-      </div></div>`;
-    $('#sumClose').onclick=closeQuiz;
-    if(todayLeft) $('#sumToday').onclick=()=>openQuiz(t);
-  } else {
-    const h=Q.i, H=HABITS[h], cur=get(Q.key,h);
-    const chips = H.sub ? `<div class="chips">${H.sub.map((s,i)=>`<button class="chip ${Q.sub.has(i)?'on':''}" data-sub="${i}">${s}</button>`).join('')}</div>` : '';
-    const ready = H.sub && Q.sub.size===H.sub.length;
-    const b=(v,txt,k)=>`<button class="ans ${v} ${cur===v?'sel':''} ${v==='g'&&ready?'ready':''}" data-v="${v}">${txt}<kbd>${k}</kbd></button>`;
-    body.innerHTML = pills+prog+`<div class="q">
-      <div class="q-top"><div class="q-num">${pad(h+1)}<small> / ${N}</small></div><div class="q-emoji">${H.emoji}</div></div>
-      <h2>${H.name}</h2>
-      <p>${H.q} <span style="opacity:.7">(${dateTitle(Q.date)})</span></p>
-      ${chips}
-      <div class="btns ${H.orange?'three':'two'}">
-        ${b('g','✓ Fait','F')}${H.orange?b('o','~ À moitié','M'):''}${b('r','✕ Pas fait','P')}
-      </div>
-      <div class="q-foot">
-        <button class="link" id="qBack" ${h===0?'disabled':''}>← Retour</button>
-        <button class="link" id="qSkip">Passer →</button>
-      </div></div>`;
-    body.querySelectorAll('.ans').forEach(x=>x.onclick=()=>answer(x.dataset.v));
-    body.querySelectorAll('.chip').forEach(x=>x.onclick=()=>{const i=+x.dataset.sub;Q.sub.has(i)?Q.sub.delete(i):Q.sub.add(i);renderQuizKeep()});
-    $('#qBack').onclick=()=>{if(Q.i>0){Q.i--;renderQuiz()}};
-    $('#qSkip').onclick=()=>next();
-  }
-  body.querySelectorAll('.pill').forEach(x=>x.onclick=()=>openQuiz(addDays(today(),+x.dataset.day)));
-}
-function renderQuizKeep(){ // re-render without the slide animation
-  renderQuiz(); const q=$('#quizBody .q'); if(q) q.style.animation='none';
-}
-function answer(v){
-  set(Q.key,Q.i,v); renderAll();
-  setTimeout(next,170);
-}
-function next(){
-  if(Q.i<N-1){Q.i++; Q.sub=new Set();} else Q.summary=true;
-  renderQuiz();
-}
-$('#quizClose').onclick=closeQuiz;
-$('#quiz').addEventListener('click',e=>{if(e.target.id==='quiz') closeQuiz()});
-document.addEventListener('keydown',e=>{
-  if(!$('#quiz').classList.contains('on')) return;
-  if(e.key==='Escape') return closeQuiz();
-  if(Q.summary){ if(e.key==='Enter') closeQuiz(); return; }
-  const k=e.key.toLowerCase();
-  if(k==='f'||k==='1'||k==='enter') answer('g');
-  else if(k==='p'||k==='2') answer('r');
-  else if((k==='m'||k==='3') && HABITS[Q.i].orange) answer('o');
-  else if(k==='arrowleft'||k==='backspace'){ if(Q.i>0){Q.i--;renderQuiz()} }
-  else if(k==='arrowright') next();
-});
-$('#checkinBtn').onclick=()=>openQuiz(today());
+$('#modalClose').onclick=closeModal;
+$('#modalOk').onclick=closeModal;
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal') closeModal()});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && $('#modal').classList.contains('on')) closeModal(); });
 
 /* ================= MISC ================= */
-$('#prev').onclick=()=>{view.m--; if(view.m<0){view.m=11;view.y--} focused=null; $('#wheel').classList.remove('focus'); renderAll()};
-$('#next').onclick=()=>{view.m++; if(view.m>11){view.m=0;view.y++} focused=null; $('#wheel').classList.remove('focus'); renderAll()};
+$('#prev').onclick=()=>{view.m--; if(view.m<0){view.m=11;view.y--} focused=null; $('#wheel').classList.remove('focus'); renderWheel(); renderSide()};
+$('#next').onclick=()=>{view.m++; if(view.m>11){view.m=0;view.y++} focused=null; $('#wheel').classList.remove('focus'); renderWheel(); renderSide()};
 $('#notes').addEventListener('input',e=>{notes[`${view.y}-${pad(view.m+1)}`]=e.target.value; store(NKEY,notes)});
 
 function applyThemeBtn(){
@@ -556,30 +532,41 @@ $('#themeBtn').onclick=()=>{
 };
 
 $('#exportBtn').onclick=()=>{
-  const blob=new Blob([JSON.stringify({data,notes},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({data,notes,subs,start:startKey()},null,2)],{type:'application/json'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`habits-${keyOf(today())}.json`; a.click();
 };
 $('#importBtn').onclick=()=>$('#importFile').click();
 $('#importFile').onchange=e=>{
   const file=e.target.files[0]; if(!file) return;
   file.text().then(txt=>{
-    try{const j=JSON.parse(txt); Object.assign(data,j.data||{}); Object.assign(notes,j.notes||{}); store(KEY,data); store(NKEY,notes); renderAll();}
-    catch(err){ $('#importBtn').textContent='✕ FICHIER INVALIDE'; setTimeout(()=>$('#importBtn').textContent='⬆ IMPORTER',2000); }
+    try{
+      const j=JSON.parse(txt);
+      Object.assign(data,j.data||{}); Object.assign(notes,j.notes||{}); Object.assign(subs,j.subs||{});
+      if(j.start && j.start<startKey()) try{localStorage.setItem(STKEY,j.start)}catch(_){}
+      store(KEY,data); store(NKEY,notes); store(SKEY,subs); renderAll();
+    }catch(err){ $('#importBtn').textContent='✕ FICHIER INVALIDE'; setTimeout(()=>$('#importBtn').textContent='⬆ IMPORTER',2000); }
   });
   e.target.value='';
 };
 
+/* ================= CLOCK: passage de minuit ================= */
+function tick(){
+  const k=keyOf(today());
+  if(k!==curDay){                     // on vient de passer minuit
+    curDay=k; closePastDays();
+    const t=today(); view={y:t.getFullYear(),m:t.getMonth()};
+    renderAll();
+  } else {
+    document.querySelectorAll('.js-clock').forEach(el=>el.textContent=untilMidnight());
+  }
+}
+setInterval(tick,20000);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) tick(); });
+
 /* ================= BOOT ================= */
 applyThemeBtn();
 renderAll();
-// Le matin, si hier n'est pas rempli, on commence par hier ; sinon aujourd'hui.
-(function autoAsk(){
-  const t=today(), y=addDays(t,-1), hour=new Date().getHours();
-  let target=null;
-  if(hour<12 && Object.keys(data).length && !isComplete(keyOf(y))) target=y;
-  else if(!isComplete(keyOf(t))) target=t;
-  if(target) setTimeout(()=>openQuiz(target),450);
-})();
+if(HABITS.some((_,h)=>!get(keyOf(today()),h))) setTimeout(openModal,400);
 </script>
 </body>
 </html>

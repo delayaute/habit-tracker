@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -147,6 +147,20 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 .obs-empty{font-size:13px;font-weight:600;color:var(--muted);padding:18px 0;text-align:center}
 .dlabel{cursor:pointer}
 .dlabel:hover text{text-decoration:underline}
+.sync-status{font-size:12px;font-weight:700;color:var(--muted);text-align:center;letter-spacing:.3px;margin-top:-10px;cursor:pointer}
+.sync-status.ok{color:var(--g)} .sync-status.err{color:var(--r)}
+.field{display:block;margin-bottom:14px}
+.field span{display:block;font-size:12px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:6px}
+.field input{width:100%;height:46px;border:2.5px solid var(--fg);background:transparent;color:var(--fg);font:600 15px var(--font);padding:0 12px;outline:0}
+.field input:focus{box-shadow:0 0 0 3px var(--soft)}
+.help{font-size:13px;font-weight:600;line-height:1.55;color:var(--muted);margin:0 0 16px}
+.help b{color:var(--fg)}
+.help ol{margin:8px 0 0;padding-left:20px}
+.help a{color:var(--fg)}
+.btn-row{display:flex;gap:10px}
+.btn-row .cta{margin-top:4px}
+.sync-msg{font-size:13px;font-weight:700;margin-top:12px;min-height:18px}
+.sync-msg.ok{color:var(--g)} .sync-msg.err{color:var(--r)}
 .tools{display:flex;gap:10px}
 .tools button{flex:1;height:40px;border:2px solid var(--fg);background:transparent;font-size:12px;font-weight:800;letter-spacing:1px}
 .tools button:hover{background:var(--fg);color:var(--bg)}
@@ -199,11 +213,11 @@ button{font-family:inherit;color:inherit;cursor:pointer}
 </head>
 <body>
 
-<button class="theme-btn" id="themeBtn" aria-label="Changer de thème">☀️</button>
+<button class="theme-btn" id="themeBtn" aria-label="Toggle theme">☀️</button>
 
 <main class="wrap">
   <section class="chart-col">
-    <svg id="wheel" viewBox="0 0 1080 1080" role="img" aria-label="Grille circulaire de suivi des habitudes"></svg>
+    <svg id="wheel" viewBox="0 0 1080 1080" role="img" aria-label="Circular habit tracking grid"></svg>
   </section>
 
   <aside class="side">
@@ -213,58 +227,85 @@ button{font-family:inherit;color:inherit;cursor:pointer}
     </header>
 
     <div class="box">
-      <div class="box-h">TO DO · AUJOURD'HUI</div>
+      <div class="box-h">TO DO · TODAY</div>
       <div class="box-b" id="todoInline"></div>
     </div>
 
     <div class="legend">
-      <span><i style="background:var(--g)"></i>Fait</span>
-      <span><i style="background:var(--o)"></i>À moitié</span>
-      <span><i style="background:var(--r)"></i>Pas fait</span>
+      <span><i style="background:var(--g)"></i>Done</span>
+      <span><i style="background:var(--o)"></i>Half done</span>
+      <span><i style="background:var(--r)"></i>Missed</span>
     </div>
 
     <div class="month-nav">
-      <button id="prev" aria-label="Mois précédent">‹</button>
+      <button id="prev" aria-label="Previous month">‹</button>
       <span id="monthLabel"></span>
-      <button id="next" aria-label="Mois suivant">›</button>
+      <button id="next" aria-label="Next month">›</button>
     </div>
 
     <div class="box">
-      <div class="box-h">STATS DU MOIS</div>
+      <div class="box-h">MONTHLY STATS</div>
       <div class="box-b" id="stats" style="padding-top:6px;padding-bottom:6px"></div>
     </div>
 
     <div class="box" id="obsBox">
       <div class="box-h">OBSERVATIONS</div>
       <div class="tabs">
-        <button data-tab="day" class="on">DU JOUR</button>
-        <button data-tab="all">GLOBALES</button>
+        <button data-tab="day" class="on">DAILY</button>
+        <button data-tab="all">ALL NOTES</button>
       </div>
       <div id="obsDayPane">
         <div class="obs-nav">
-          <button id="obsPrev" aria-label="Jour précédent">‹</button>
+          <button id="obsPrev" aria-label="Previous day">‹</button>
           <span id="obsDate"></span>
-          <button id="obsNext" aria-label="Jour suivant">›</button>
+          <button id="obsNext" aria-label="Next day">›</button>
         </div>
-        <textarea class="notes" id="notes" placeholder="Comment s'est passée ta journée ?"></textarea>
+        <textarea class="notes" id="notes" placeholder="How did your day go?"></textarea>
       </div>
       <div id="obsAllPane" hidden></div>
     </div>
 
     <div class="tools">
-      <button id="exportBtn">⬇ EXPORTER</button>
-      <button id="importBtn">⬆ IMPORTER</button>
+      <button id="exportBtn">⬇ EXPORT</button>
+      <button id="importBtn">⬆ IMPORT</button>
+      <button id="syncBtn">☁️ SYNC</button>
       <input type="file" id="importFile" accept="application/json" hidden>
     </div>
+    <div class="sync-status" id="syncStatus"></div>
   </aside>
 </main>
 
 <div class="overlay" id="modal" aria-modal="true" role="dialog">
   <div class="card">
-    <div class="card-h"><b id="modalTitle">TO DO</b><button class="x" id="modalClose" aria-label="Fermer">✕</button></div>
+    <div class="card-h"><b id="modalTitle">TO DO</b><button class="x" id="modalClose" aria-label="Close">✕</button></div>
     <div class="card-b">
       <div id="todoModal"></div>
-      <button class="cta" id="modalOk">C'EST BON →</button>
+      <button class="cta" id="modalOk">DONE →</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="syncModal" aria-modal="true" role="dialog">
+  <div class="card">
+    <div class="card-h"><b>☁️ GITHUB SYNC</b><button class="x" id="syncClose" aria-label="Close">✕</button></div>
+    <div class="card-b">
+      <div class="help">
+        Saves all your data (checks, notes) as <b>habits.json</b> in a <b>private</b> GitHub repository,
+        so your phone, your computer and the iPhone widget share the same data.
+        <ol>
+          <li>Create a <b>private</b> repo, e.g. <b>habit-data</b>.</li>
+          <li>Create a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">fine-grained token</a>:
+            only that repo, permission <b>Contents → Read and write</b>.</li>
+          <li>Paste both below, on each device.</li>
+        </ol>
+      </div>
+      <label class="field"><span>Private repository</span><input id="syncRepo" placeholder="delayaute/habit-data" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <label class="field"><span>Access token</span><input id="syncToken" type="password" placeholder="github_pat_…" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <div class="btn-row">
+        <button class="cta" id="syncConnect">CONNECT</button>
+        <button class="cta ghost" id="syncOff" style="background:transparent;color:var(--fg)">DISCONNECT</button>
+      </div>
+      <div class="sync-msg" id="syncMsg"></div>
     </div>
   </div>
 </div>
@@ -281,23 +322,25 @@ const HABITS = [
   { name:'Read 15 min',             emoji:'📖' },
   { name:'Workout or stretching',   emoji:'💪' },
   { name:'Morning routine',         emoji:'🌅',
-    sub:['Ouvrir la fenêtre','Faire le lit','0,5 L d’eau min','Bain glacé','Petit-déj sans sucre'] },
-    // clic sur la case = tout fait ; « détail » = toucher ce qui n'a PAS été fait
-  { name:'No doomscrolling',        emoji:'📵', orange:true },
-  { name:'No alcohol & junk food',  emoji:'🥦', orange:true },
-  { name:'No gooning',              emoji:'🧠' },
+    sub:['Open the window','Make the bed','Drink 0.5 L of water','Ice bath','No-sugar breakfast'] },
+    // checkbox = everything done; “details” = tap the steps you did NOT do
+  // byDefault: pre-checked green every day — uncheck only if you slipped
+  { name:'No doomscrolling',        emoji:'📵', orange:true, byDefault:true },
+  { name:'No alcohol & junk food',  emoji:'🥦', orange:true, byDefault:true },
+  { name:'No gooning',              emoji:'🧠', byDefault:true },
 ];
 const N = HABITS.length;
-const MONTHS = ['JANVIER','FÉVRIER','MARS','AVRIL','MAI','JUIN','JUILLET','AOÛT','SEPTEMBRE','OCTOBRE','NOVEMBRE','DÉCEMBRE'];
-const WDAYS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-const LABEL = { g:'✓ Fait', r:'✕ Pas fait', o:'½ À moitié' };
+const MONTHS = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+const WDAYS = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1).toLowerCase();
+const LABEL = { g:'✓ Done', r:'✕ Missed', o:'½ Half done' };
 
 const KEY='ht-data-v1', OKEY='ht-obs-v1', MKEY='ht-miss-v1', TKEY='ht-theme', STKEY='ht-start';
 const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}};
 const store=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let data = load(KEY,{});
-let obs  = load(OKEY,{});   // observations journalières { 'YYYY-MM-DD': texte }
-let miss = load(MKEY,{});   // étapes de la morning routine NON faites { 'YYYY-MM-DD': [bool…] }
+let obs  = load(OKEY,{});   // daily notes { 'YYYY-MM-DD': text }
+let miss = load(MKEY,{});   // morning-routine steps NOT done { 'YYYY-MM-DD': [bool…] }
 
 const pad=n=>String(n).padStart(2,'0');
 const keyOf=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
@@ -310,13 +353,17 @@ function set(k,h,v){
   data[k][h]=v;
   if(data[k].every(x=>!x)) delete data[k];
   store(KEY,data);
+  touch('d',k);
 }
+/* Each changed day gets a timestamp so two devices can be merged (newest wins). */
+const TSKEY='ht-ts-v1';
+let ts = load(TSKEY,{});
+function touch(p,k){ ts[p+':'+k]=Date.now(); store(TSKEY,ts); if(typeof scheduleSync==='function') scheduleSync(); }
 const $=s=>document.querySelector(s);
 
 /* ================= MIDNIGHT CLOSE =================
-   Le suivi démarre le premier jour d'utilisation. Chaque jour passé
-   (à partir de ce jour-là) dont une habitude n'a pas été cochée
-   devient automatiquement « Pas fait » (rouge). */
+   Tracking starts on the first day of use. Every past day (from then on)
+   with an unchecked habit is automatically set to “Missed” (red). */
 function startKey(){
   let s=null; try{s=localStorage.getItem(STKEY)}catch(e){}
   if(!s){
@@ -330,10 +377,14 @@ function closePastDays(){
   const t=today(); let d=parseKey(startKey()), changed=false;
   while(d<t){
     const k=keyOf(d);
-    for(let h=0;h<N;h++) if(!get(k,h)){ if(!data[k]) data[k]=Array(N).fill(null); data[k][h]='r'; changed=true; }
+    for(let h=0;h<N;h++) if(!get(k,h)){ if(!data[k]) data[k]=Array(N).fill(null); data[k][h]=HABITS[h].byDefault?'g':'r'; changed=true; }
     d=addDays(d,1);
   }
+  // today: pre-check the “avoid” habits (no timestamp, so a real answer from another device wins)
+  const tk=keyOf(t);
+  HABITS.forEach((H,h)=>{ if(H.byDefault && !get(tk,h)){ if(!data[tk]) data[tk]=Array(N).fill(null); data[tk][h]='g'; changed=true; } });
   if(changed) store(KEY,data);
+  return changed;
 }
 closePastDays();
 
@@ -426,7 +477,7 @@ function renderWheel(flashKey){
       <text class="svgtxt" x="${CX}" y="${CY-16}" font-size="27" font-weight="900" letter-spacing="1.5">${MONTHS[m]} ${y}</text>
       <line x1="${CX-90}" y1="${CY+2}" x2="${CX+90}" y2="${CY+2}" style="stroke:var(--fg)" stroke-width="1.6"/>
       <text class="svgtxt" x="${CX}" y="${CY+72}" font-size="66" font-weight="900">${st.pct===null?'—':st.pct+'%'}</text>
-      <text class="svgtxt" x="${CX}" y="${CY+100}" font-size="13" font-weight="800" letter-spacing="2" style="fill:var(--muted)">RÉUSSITE</text>
+      <text class="svgtxt" x="${CX}" y="${CY+100}" font-size="13" font-weight="800" letter-spacing="2" style="fill:var(--muted)">SUCCESS RATE</text>
     </g>`;
 }
 
@@ -434,7 +485,7 @@ function renderWheel(flashKey){
 let popH=null;
 function untilMidnight(){
   const now=new Date(), mid=addDays(today(),1), mins=Math.max(0,Math.ceil((mid-now)/60000));
-  return `${Math.floor(mins/60)} h ${pad(mins%60)}`;
+  return `${Math.floor(mins/60)}h ${pad(mins%60)}m`;
 }
 function todoHTML(){
   const t=today(), k=keyOf(t);
@@ -442,8 +493,8 @@ function todoHTML(){
   const left=N-arr.filter(Boolean).length;
   const head=`<div class="td-head">
       <div>
-        <div class="td-date">${WDAYS[t.getDay()]} ${t.getDate()} ${MONTHS[t.getMonth()].toLowerCase()}</div>
-        <div class="td-clock">Clôture dans <b class="js-clock">${untilMidnight()}</b> · ${left?`${left} à cocher`:'tout est coché'}</div>
+        <div class="td-date">${WDAYS[t.getDay()]}, ${MONTHS[t.getMonth()]} ${t.getDate()}</div>
+        <div class="td-clock">Closes in <b class="js-clock">${untilMidnight()}</b> · ${left?`${left} left to check`:'all checked'}</div>
       </div>
       <div class="td-score">${g}<small>/${N}${o?` +${o}½`:''}</small></div>
     </div>
@@ -452,12 +503,12 @@ function todoHTML(){
     const s=arr[h], ms=miss[k]||[];
     const mark = s==='g'?'✓': s==='o'?'½': s==='r'?'✕':'';
     let extra='', subHTML='';
-    if(H.orange) extra=`<button class="half ${s==='o'?'on':''}" data-act="o" title="À moitié">½</button>`;
+    if(H.orange) extra=`<button class="half ${s==='o'?'on':''}" data-act="o" title="Half done">½</button>`;
     if(H.sub){
       const nm=ms.filter(Boolean).length;
-      extra=`<button class="more ${subOpen?'on':''}" data-act="exp">${nm?nm+' manqué'+(nm>1?'s':''):'détail'} ${subOpen?'▴':'▾'}</button>`;
+      extra=`<button class="more ${subOpen?'on':''}" data-act="exp">${nm?nm+' missed':'details'} ${subOpen?'▴':'▾'}</button>`;
       if(subOpen) subHTML=`<div class="subs-wrap">
-          <div class="subs-hint">Touche ce que tu n'as PAS fait :</div>
+          <div class="subs-hint">Tap what you did NOT do:</div>
           <div class="subs">${H.sub.map((x,i)=>`<button class="sub ${ms[i]?'miss':''}" data-sub="${i}">${x}</button>`).join('')}</div>
         </div>`;
     }
@@ -469,7 +520,7 @@ function todoHTML(){
       </div>
     </div>`;
   }).join('');
-  return head+list+`<div class="td-note">Ce qui n'est pas coché à minuit passe automatiquement en rouge.</div>`;
+  return head+list+`<div class="td-note">08–10 start checked: uncheck them if you slipped. Anything else left unchecked at midnight turns red.</div>`;
 }
 function renderTodo(){
   const html=todoHTML();
@@ -479,11 +530,11 @@ function renderTodo(){
   const perfect=arr.every(s=>s==='g');
   $('#modalTitle').textContent=`TO DO · ${WDAYS[t.getDay()].toUpperCase()} ${t.getDate()}`;
   const ok=$('#modalOk'); ok.classList.toggle('perfect',perfect);
-  ok.textContent = perfect ? 'JOURNÉE PARFAITE 🔥 →' : "C'EST BON →";
+  ok.textContent = perfect ? 'PERFECT DAY 🔥 →' : "DONE →";
   popH=null;
 }
 let subOpen=false;
-// Morning routine : 0 étape manquée = vert, toutes manquées = rouge, sinon orange.
+// Morning routine: no step missed = green, all missed = red, otherwise orange.
 function stateFromMiss(ms,n){const c=ms.filter(Boolean).length; return c===0?'g':c===n?'r':'o'}
 function onTodoClick(e){
   const row=e.target.closest('.todo'); if(!row) return;
@@ -492,15 +543,16 @@ function onTodoClick(e){
   if(subBtn){
     const i=+subBtn.dataset.sub, n=H.sub.length;
     const ms=miss[k]||Array(n).fill(false);
-    ms[i]=!ms[i]; miss[k]=ms; store(MKEY,miss);
+    ms[i]=!ms[i]; miss[k]=ms; store(MKEY,miss); touch('m',k);
     set(k,h,stateFromMiss(ms,n)); popH=h; renderAll(); return;
   }
   const act=e.target.closest('[data-act]'); if(!act) return;
   if(act.dataset.act==='exp'){ subOpen=!subOpen; renderTodo(); return; }
-  if(H.sub && act.dataset.act==='g'){            // case cochée = tout fait
-    delete miss[k]; store(MKEY,miss);
+  if(H.sub && act.dataset.act==='g'){            // checkbox = everything done
+    if(miss[k]){ delete miss[k]; store(MKEY,miss); touch('m',k); }
     set(k,h, s?null:'g');
   }
+  else if(H.byDefault) set(k,h, act.dataset.act==='o' ? (s==='o'?'g':'o') : (s==='g'?'r':'g'));   // unchecked = slipped
   else if(act.dataset.act==='o') set(k,h, s==='o'?null:'o');
   else set(k,h, s==='g'?null:'g');
   popH=h; renderAll();
@@ -522,7 +574,7 @@ function renderSide(){
       <span class="pc">${p.pct===null?'—':p.pct+'%'}</span>
       <span></span>
       <div class="bar"><i style="width:${w(p.g)}%;background:var(--g)"></i><i style="width:${w(p.o)}%;background:var(--o)"></i><i style="width:${w(p.r)}%;background:var(--r)"></i></div>
-      <span class="stk">${s?'🔥 '+s+' j':''}</span>
+      <span class="stk">${s?'🔥 '+s+'d':''}</span>
     </div>`;
   }).join('');
   renderObs();
@@ -535,7 +587,7 @@ function renderObs(){
   $('#obsDayPane').hidden = obsTab!=='day';
   $('#obsAllPane').hidden = obsTab!=='all';
   const d=parseKey(obsKey), t=today();
-  $('#obsDate').textContent = (+d===+t?"Aujourd'hui · ":'') + `${WDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()].toLowerCase()}`;
+  $('#obsDate').textContent = (+d===+t?'Today · ':'') + `${WDAYS[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}`;
   $('#obsNext').disabled = d>=t;
   if(document.activeElement!==$('#notes')) $('#notes').value = obs[obsKey]||'';
   if(obsTab==='all'){
@@ -550,7 +602,7 @@ function renderObs(){
         <span class="oi-dots">${HABITS.map((_,h)=>`<i class="${get(k,h)||''}"></i>`).join('')}</span></div>
         <div class="oi-t">${esc}</div></button>`;
     }
-    $('#obsAllPane').innerHTML = html || `<div class="obs-empty">Aucune observation pour l'instant.<br>Écris-en une dans « Du jour ».</div>`;
+    $('#obsAllPane').innerHTML = html || `<div class="obs-empty">No notes yet.<br>Write one in the “Daily” tab.</div>`;
   }
 }
 function openObsDay(k){ obsKey=k; obsTab='day'; renderObs(); }
@@ -560,8 +612,8 @@ $('#obsNext').onclick=()=>openObsDay(keyOf(addDays(parseKey(obsKey),1)));
 $('#obsAllPane').addEventListener('click',e=>{const it=e.target.closest('.obs-item'); if(it) openObsDay(it.dataset.k);});
 $('#notes').addEventListener('input',e=>{
   const v=e.target.value; if(v.trim()) obs[obsKey]=v; else delete obs[obsKey];
-  store(OKEY,obs);
-  renderWheel();   // met à jour le petit point sous le jour
+  store(OKEY,obs); touch('o',obsKey);
+  renderWheel();   // refresh the note dot under the day number
 });
 function renderAll(flashKey){renderWheel(flashKey);renderTodo();renderSide()}
 
@@ -569,7 +621,7 @@ function renderAll(flashKey){renderWheel(flashKey);renderTodo();renderSide()}
 const tip=$('#tip');
 function cycle(h,cur,isPast){
   let order = (HABITS[h].orange||HABITS[h].sub) ? [null,'g','o','r'] : [null,'g','r'];
-  if(isPast) order=order.slice(1);              // un jour passé n'est jamais « vide »
+  if(isPast || HABITS[h].byDefault) order=order.slice(1);              // a past day is never empty
   const i=order.indexOf(cur);
   return order[(i+1)%order.length];
 }
@@ -581,7 +633,7 @@ $('#wheel').addEventListener('click',e=>{
   }
   const r=e.target.closest('.hrow');
   if(r) return toggleFocus(+r.dataset.h);
-  const dl=e.target.closest('.dlabel');      // clic sur un numéro de jour → ses observations
+  const dl=e.target.closest('.dlabel');      // click a day number → open its notes
   if(dl){ openObsDay(dl.dataset.k); $('#obsBox').scrollIntoView({behavior:'smooth',block:'center'}); }
 });
 let focused=null;
@@ -594,7 +646,7 @@ function toggleFocus(h){
 function showTip(e,h,d){
   const date=new Date(view.y,view.m,d), k=keyOf(date), s=get(k,h), H=HABITS[h];
   const ms = H.sub && s==='o' ? H.sub.filter((_,i)=>(miss[k]||[])[i]) : [];
-  tip.textContent=`${WDAYS[date.getDay()].slice(0,3)}. ${d} ${MONTHS[view.m].toLowerCase()} · ${H.name} — ${s?LABEL[s]:'pas encore coché'}${ms.length?' (manqué : '+ms.join(', ').toLowerCase()+')':''}`;
+  tip.textContent=`${cap(WDAYS[date.getDay()].slice(0,3))} ${cap(MONTHS[view.m])} ${d} · ${H.name} — ${s?LABEL[s]:'not checked yet'}${ms.length?' (missed: '+ms.join(', ').toLowerCase()+')':''}`;
   tip.style.left=Math.min(e.clientX+14, innerWidth-tip.offsetWidth-10)+'px';
   tip.style.top=(e.clientY+16)+'px';
   tip.classList.add('on');
@@ -626,7 +678,7 @@ $('#next').onclick=()=>{view.m++; if(view.m>11){view.m=0;view.y++} focused=null;
 function applyThemeBtn(){
   const dark=document.documentElement.dataset.theme==='dark';
   $('#themeBtn').textContent = dark?'☀️':'🌙';
-  $('#themeBtn').title = dark?'Passer en mode clair':'Passer en mode sombre';
+  $('#themeBtn').title = dark?'Switch to light mode':'Switch to dark mode';
   document.querySelector('meta[name=theme-color]').content = dark?'#0b0b0c':'#ffffff';
 }
 $('#themeBtn').onclick=()=>{
@@ -647,18 +699,120 @@ $('#importFile').onchange=e=>{
       const j=JSON.parse(txt);
       Object.assign(data,j.data||{}); Object.assign(obs,j.obs||{}); Object.assign(miss,j.miss||{});
       if(j.start && j.start<startKey()) try{localStorage.setItem(STKEY,j.start)}catch(_){}
-      store(KEY,data); store(OKEY,obs); store(MKEY,miss); renderAll();
-    }catch(err){ $('#importBtn').textContent='✕ FICHIER INVALIDE'; setTimeout(()=>$('#importBtn').textContent='⬆ IMPORTER',2000); }
+      const now=Date.now();
+      Object.keys(j.data||{}).forEach(k=>ts['d:'+k]=now);
+      Object.keys(j.obs||{}).forEach(k=>ts['o:'+k]=now);
+      Object.keys(j.miss||{}).forEach(k=>ts['m:'+k]=now);
+      store(KEY,data); store(OKEY,obs); store(MKEY,miss); store(TSKEY,ts); renderAll(); scheduleSync();
+    }catch(err){ $('#importBtn').textContent='✕ INVALID FILE'; setTimeout(()=>$('#importBtn').textContent='⬆ IMPORT',2000); }
   });
   e.target.value='';
 };
 
-/* ================= CLOCK: passage de minuit ================= */
+/* ================= GITHUB SYNC (private repo) ================= */
+const SYNC_KEY='ht-sync', SYNC_FILE='habits.json';
+let sync = load(SYNC_KEY,null);          // { repo:'owner/name', token:'…' }
+let syncBusy=false, syncAgain=false, syncTimer=null, lastSync=null, syncErr=null;
+
+const b64enc=s=>{const b=new TextEncoder().encode(s);let bin='';for(let i=0;i<b.length;i++)bin+=String.fromCharCode(b[i]);return btoa(bin)};
+const b64dec=s=>new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\s/g,'')),c=>c.charCodeAt(0)));
+function gh(url,opt={},cfg=sync){
+  return fetch(`https://api.github.com/repos/${cfg.repo}${url}`,{cache:'no-store',...opt,headers:{
+    'Authorization':'Bearer '+cfg.token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(opt.headers||{})}});
+}
+function core(){ return {start:startKey(), data, obs, miss, ts}; }
+function payload(){ return {app:'monthly-habits', version:1, updated:new Date().toISOString(), habits:HABITS.map(h=>h.name), byDefault:HABITS.map((h,i)=>h.byDefault?i:-1).filter(i=>i>=0), ...core()}; }
+const coreStr=o=>JSON.stringify({start:o.start,data:o.data,obs:o.obs,miss:o.miss,ts:o.ts});
+
+function mergeIn(r){
+  let changed=false; const rts=r.ts||{};
+  for(const [p,loc,rem] of [['d',data,r.data||{}],['o',obs,r.obs||{}],['m',miss,r.miss||{}]]){
+    for(const k of new Set([...Object.keys(loc),...Object.keys(rem)])){
+      const lt=ts[p+':'+k]||0, rt=rts[p+':'+k]||0;
+      if(rt>lt){ if(k in rem) loc[k]=rem[k]; else delete loc[k]; ts[p+':'+k]=rt; changed=true; }
+      else if(!lt && !rt && !(k in loc) && (k in rem)){ loc[k]=rem[k]; changed=true; }
+    }
+  }
+  if(r.start && r.start<startKey()){ try{localStorage.setItem(STKEY,r.start)}catch(e){} changed=true; }
+  if(changed){ store(KEY,data); store(OKEY,obs); store(MKEY,miss); store(TSKEY,ts); }
+  return changed;
+}
+async function pullRemote(cfg=sync){
+  const r=await gh(`/contents/${SYNC_FILE}`,{},cfg);
+  if(r.status===404) return {sha:null,json:null};
+  if(!r.ok) throw new Error(r.status===401?'invalid token':r.status===403?'no access':'GitHub error '+r.status);
+  const j=await r.json();
+  return {sha:j.sha, json:JSON.parse(b64dec(j.content))};
+}
+async function syncNow(retry=true){
+  if(!sync) return renderSyncStatus();
+  if(syncBusy){ syncAgain=true; return; }
+  syncBusy=true; syncErr=null; renderSyncStatus('Syncing…');
+  try{
+    const {sha,json}=await pullRemote();
+    if(json && mergeIn(json)){ closePastDays(); renderAll(); }
+    if(!json || coreStr(json)!==coreStr(core())){
+      const res=await gh(`/contents/${SYNC_FILE}`,{method:'PUT',body:JSON.stringify({
+        message:`Update habits ${keyOf(today())}`, content:b64enc(JSON.stringify(payload())), ...(sha?{sha}:{})})});
+      if((res.status===409||res.status===422) && retry){ syncBusy=false; return syncNow(false); }
+      if(!res.ok) throw new Error(res.status===403||res.status===404?'token needs Contents: read & write':'GitHub error '+res.status);
+    }
+    lastSync=new Date();
+  }catch(e){ syncErr=e.message||'network error'; }
+  syncBusy=false; renderSyncStatus();
+  if(syncAgain){ syncAgain=false; scheduleSync(); }
+}
+function scheduleSync(){ if(!sync) return; clearTimeout(syncTimer); syncTimer=setTimeout(syncNow,1500); }
+function renderSyncStatus(msg){
+  const el=$('#syncStatus'); el.className='sync-status';
+  if(!sync){ el.textContent='Data is stored on this device only · tap ☁️ SYNC to back it up on GitHub'; return; }
+  if(msg){ el.textContent='☁️ '+msg; return; }
+  if(syncErr){ el.classList.add('err'); el.textContent=`⚠️ Sync failed (${syncErr})`; return; }
+  el.classList.add('ok');
+  el.textContent = lastSync ? `☁️ Synced with ${sync.repo} at ${pad(lastSync.getHours())}:${pad(lastSync.getMinutes())}` : `☁️ Connected to ${sync.repo}`;
+}
+function openSync(){
+  $('#syncRepo').value = sync?.repo || '';
+  $('#syncToken').value = sync?.token || '';
+  $('#syncMsg').textContent=''; $('#syncMsg').className='sync-msg';
+  $('#syncOff').style.display = sync?'':'none';
+  $('#syncModal').classList.add('on');
+}
+function syncMsg(t,cls){ const m=$('#syncMsg'); m.textContent=t; m.className='sync-msg '+(cls||''); }
+$('#syncBtn').onclick=openSync;
+$('#syncStatus').onclick=openSync;
+$('#syncClose').onclick=()=>$('#syncModal').classList.remove('on');
+$('#syncModal').addEventListener('click',e=>{if(e.target.id==='syncModal') $('#syncModal').classList.remove('on')});
+$('#syncConnect').onclick=async()=>{
+  const cfg={repo:$('#syncRepo').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\/$/,''), token:$('#syncToken').value.trim()};
+  if(!/^[\w.-]+\/[\w.-]+$/.test(cfg.repo)) return syncMsg('Repository must look like owner/name.','err');
+  if(!cfg.token) return syncMsg('Paste your access token.','err');
+  syncMsg('Checking…');
+  try{
+    const r=await gh('',{},cfg);
+    if(r.status===401) return syncMsg('This token is not valid.','err');
+    if(!r.ok) return syncMsg('Repository not found, or the token has no access to it.','err');
+    const info=await r.json();
+    if(!info.private) return syncMsg('This repository is PUBLIC: your habits and notes would be visible to everyone. Use a private repo.','err');
+    await pullRemote(cfg);   // checks read access
+    sync=cfg; store(SYNC_KEY,sync);
+    await syncNow();
+    if(syncErr) return syncMsg('Connected, but saving failed: '+syncErr,'err');
+    syncMsg('✓ Connected. Your data is saved in '+cfg.repo+'.','ok');
+    $('#syncOff').style.display='';
+  }catch(e){ syncMsg('Could not reach GitHub ('+(e.message||'network')+').','err'); }
+};
+$('#syncOff').onclick=()=>{
+  sync=null; try{localStorage.removeItem(SYNC_KEY)}catch(e){}
+  renderSyncStatus(); syncMsg('Disconnected. Your data stays on this device.'); $('#syncOff').style.display='none';
+};
+
+/* ================= CLOCK: midnight rollover ================= */
 function tick(){
   const k=keyOf(today());
-  if(k!==curDay){                     // on vient de passer minuit
+  if(k!==curDay){                     // we just passed midnight
     if(obsKey===curDay) obsKey=k;
-    curDay=k; closePastDays();
+    curDay=k; if(closePastDays()) scheduleSync();
     const t=today(); view={y:t.getFullYear(),m:t.getMonth()};
     renderAll();
   } else {
@@ -666,12 +820,14 @@ function tick(){
   }
 }
 setInterval(tick,20000);
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden) tick(); });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ tick(); syncNow(); } });
 
 /* ================= BOOT ================= */
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(()=>{});
 applyThemeBtn();
 renderAll();
+renderSyncStatus();
+syncNow();
 if(HABITS.some((_,h)=>!get(keyOf(today()),h))) setTimeout(openModal,400);
 </script>
 </body>

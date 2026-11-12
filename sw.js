@@ -1,9 +1,15 @@
-// Network-first : toujours la dernière version en ligne, la copie en cache sert hors connexion.
-const CACHE = 'habits-v1';
+// Network-first: always the latest online version; the cached copy is used offline.
+// Only the site itself and its fonts are cached, never the GitHub API (your private data).
+const CACHE = 'habits-v2';
 self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', e => e.waitUntil(self.clients.claim()));
+self.addEventListener('activate', e => e.waitUntil(
+  caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    .then(() => self.clients.claim())
+));
 self.addEventListener('fetch', e => {
-  if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
+  const ok = url.origin === location.origin || /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
+  if (e.request.method !== 'GET' || !ok) return;
   e.respondWith(
     fetch(e.request)
       .then(res => { const copy = res.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); return res; })

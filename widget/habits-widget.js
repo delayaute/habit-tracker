@@ -36,7 +36,8 @@ async function getConfig(reset) {
   a.addAction('Save');
   a.addCancelAction('Cancel');
   if (await a.present() === -1) return null;
-  const repo = a.textFieldValue(0).trim(), token = a.textFieldValue(1).trim();
+  const repo = a.textFieldValue(0).trim().replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '');
+  const token = a.textFieldValue(1).replace(/\s+/g, '');   // removes spaces / line breaks from copy-paste
   Keychain.set(K_REPO, repo);
   Keychain.set(K_TOKEN, token);
   return { repo, token };
@@ -216,8 +217,23 @@ const family = config.widgetFamily || 'medium';
 let widget;
 try {
   const reset = !config.runsInWidget && args.queryParameters && args.queryParameters.reset === '1';
-  const cfg = await getConfig(reset);
-  widget = cfg ? await buildWidget(await loadData(cfg), family) : errorWidget('Not set up yet');
+  let cfg = await getConfig(reset);
+  let db = null;
+  try {
+    db = cfg ? await loadData(cfg) : null;
+  } catch (e) {
+    // Run from the app with a bad token / repo → offer to type them again, then retry once.
+    if (config.runsInWidget) throw e;
+    const a = new Alert();
+    a.title = '⚠️ ' + (e.message || 'Error');
+    a.message = 'GitHub refused the access. Enter the repo and token again?';
+    a.addAction('Enter again');
+    a.addCancelAction('Cancel');
+    if (await a.present() === -1) throw e;
+    cfg = await getConfig(true);
+    db = cfg ? await loadData(cfg) : null;
+  }
+  widget = db ? await buildWidget(db, family) : errorWidget('Not set up yet');
 } catch (e) {
   widget = errorWidget(e.message || String(e));
 }

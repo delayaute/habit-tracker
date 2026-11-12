@@ -2,7 +2,7 @@
 
 A visual circular habit tracker (one ring per habit, one ray per day).
 
-- On open, today's to-do list pops up: check what you did (+ “½” for half done on 08 and 09).
+- On open, today's to-do list pops up: check what you did (+ “½” for half done on 02, 03, 04, 08 and 09).
 - Habits 08–10 (no doomscrolling, no alcohol & junk food, no gooning) start checked green every day — uncheck them only if you slipped.
 - At midnight, anything else left unchecked automatically turns red.
 - Morning routine: checking it = everything done; “details” to tap the steps you did NOT do (orange if some, red if all).

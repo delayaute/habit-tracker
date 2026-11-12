@@ -38,6 +38,7 @@ async function getConfig(reset) {
   if (await a.present() === -1) return null;
   const repo = a.textFieldValue(0).trim().replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '');
   const token = a.textFieldValue(1).replace(/\s+/g, '');   // removes spaces / line breaks from copy-paste
+  if (!token) throw new Error('No token pasted — create one on GitHub first');
   Keychain.set(K_REPO, repo);
   Keychain.set(K_TOKEN, token);
   return { repo, token };
